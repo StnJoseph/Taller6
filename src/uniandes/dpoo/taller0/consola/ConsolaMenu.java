@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Random;
 
 import uniandes.dpoo.taller0.procesamiento.Restaurante;
+import uniandes.dpoo.taller.test.HamburguesaException;
 import uniandes.dpoo.taller0.modelo.Pedido;
 import uniandes.dpoo.taller0.procesamiento.LoaderMenu;
 
@@ -25,8 +26,9 @@ public class ConsolaMenu
 	 * Ejecuta la aplicación: le muestra el menú al usuario y la pide que ingrese
 	 * una opción, y ejecuta la opción seleccionada por el usuario. Este proceso se
 	 * repite hasta que el usuario seleccione la opción de abandonar la aplicación.
+	 * @throws HamburguesaException 
 	 */
-	public void ejecutarAplicacion()
+	public void ejecutarAplicacion() throws HamburguesaException
 	{
 		ejecutarCargarArchivos();
 		System.out.println("BIENVENIDX A EL CORRAL\n");
@@ -39,16 +41,17 @@ public class ConsolaMenu
 				mostrarMenu();
 				int opcion_seleccionada = Integer.parseInt(input("Por favor selecciona una opción"));
 				System.out.println("\n----------------------------------------------------");				
+				int numPedido=0;
 				
 				if (opcion_seleccionada == 1) 
 				{
 					ejecutarProductosMenu();
 					ejecutarCombos();
-					ejecutarIngredientes();	
+					ejecutarIngredientes();						
 				}
 					
 				else if (opcion_seleccionada == 2 && calculadora != null) 
-					ejecutarNuevoPedido();
+					ejecutarNuevoPedido(numPedido);
 
 				else if (opcion_seleccionada == 3 && calculadora != null) 
 					ejecutarAdicionarItem();
@@ -98,7 +101,7 @@ public class ConsolaMenu
 	}
 
 	//Cargar Archivo
-	private void ejecutarCargarArchivos()
+	private void ejecutarCargarArchivos() throws HamburguesaException
 	{
 		try
 		{
@@ -188,7 +191,7 @@ public class ConsolaMenu
 	
 
 	//Ejecuta opcion 2
-	private void ejecutarNuevoPedido() 
+	private void ejecutarNuevoPedido(int numPedido) 
 	{
 		System.out.println("¡Iniciemos con el pedido!\n");
 		String nombre = (input("Digita tu nombre"));
@@ -197,7 +200,6 @@ public class ConsolaMenu
 		System.out.println("(Recuerda digitar 0 para terminar o cerrar cualquier proceso)");
 		Random aleatorio = new Random();
 		int id =1000+aleatorio.nextInt( (10000+1) - 1000);
-		int numPedido = 0;
 		
 		ArrayList<List<List<Integer>>> items = seleccionarItems(id);
 		
@@ -218,6 +220,7 @@ public class ConsolaMenu
 		
 		while (value) 
 		{
+						
 			int item = Integer.parseInt(input("\nDigita el numero del item del menu"));
 			
 			List<List<Integer>> listaIngredintes = new ArrayList<>();
@@ -322,8 +325,9 @@ public class ConsolaMenu
 			}
 			else
 				System.out.println("\nIntenta otro numero de item, ese no lo tenemos");
-					
+						
 		}
+		
 		return items;
 	}
 	
@@ -349,9 +353,17 @@ public class ConsolaMenu
 	public void ejecutarProductosPedido () 
 	{
 		int id = Integer.parseInt(input("Digita el id de tu pedido"));
-		System.out.println("----------------------------------------------------");
-		Pedido pedido = calculadora.darPedidos().get(id);
-		calculadora.darProductosPedido(pedido);
+		
+		if (calculadora.darPedidos().get(id)==null)
+		{
+			System.out.println("\nPedido no encontrado\n");
+		}
+		else 
+		{
+			System.out.println("----------------------------------------------------");
+			Pedido pedido = calculadora.darPedidos().get(id);
+			calculadora.darProductosPedido(pedido, true);
+		}
 	}
 	
 	
@@ -379,8 +391,9 @@ public class ConsolaMenu
 	 * 
 	 * @param args Parámetros introducidos en la línea de comandos al invocar la
 	 *             aplicación
+	 * @throws HamburguesaException 
 	 */
-	public static void main(String[] args)
+	public static void main(String[] args) throws HamburguesaException
 	{
 		ConsolaMenu consola = new ConsolaMenu();
 		consola.ejecutarAplicacion();

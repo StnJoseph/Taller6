@@ -6,18 +6,11 @@ import java.util.List;
 /**
  * Esta clase encapsula la información sobre los combos, su descuento y sus items
  */
-public class Combo
+public class Combo extends Producto
 {
 	// ************************************************************************
 	// Atributos
 	// ************************************************************************
-
-	//El nombre del combo
-	private String nombreCombo;
-
-	//El descuento del combo
-	private double descuento;
-	
 	//Una lista con los productos individuales del combo.
 	private List<ProductoMenu> itemsCombo;
 
@@ -33,10 +26,9 @@ public class Combo
 	 * @param elNombre El nombre del combo.
 	 * @param elDescuento El descuento del combo.
 	 */
-	public Combo(String elNombre, Double elDescuento)
+	public Combo(String elNombre, Integer elDescuento)
 	{
-		this.nombreCombo = elNombre;
-		this.descuento = elDescuento;
+		super(elNombre, elDescuento);
 		this.itemsCombo = new ArrayList<ProductoMenu>();
 	}
 
@@ -47,13 +39,13 @@ public class Combo
 	//Consulta el nombre del combo
 	public String darNombre()
 	{
-		return nombreCombo;
+		return super.getNombre();
 	}
 
 	//Consulta el descuento del combo
-	public Double darDescuento()
+	public int darDescuento()
 	{
-		return descuento;
+		return super.getPrecio();
 	}
 
 	// ************************************************************************
@@ -74,34 +66,6 @@ public class Combo
 			items.add(item.darNombre());
 		}
 		return items;
-	}
-
-	// ************************************************************************
-	// Métodos sobrecargados de una superclase
-	// ************************************************************************
-
-	@Override
-	public boolean equals(Object obj)
-	{
-		if (obj.getClass() != this.getClass())
-			return false;
-		else
-		{
-			Combo otro = (Combo) obj;
-			return this.nombreCombo.equals(otro.nombreCombo);
-		}
-	}
-
-	@Override
-	public int hashCode()
-	{
-		return nombreCombo.hashCode();
-	}
-
-	@Override
-	public String toString()
-	{
-		return nombreCombo;
 	}
 
 }

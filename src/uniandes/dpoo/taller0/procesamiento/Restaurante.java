@@ -131,7 +131,9 @@ public class Restaurante
 			
 			for (String item : combo.consultarItems()) 
 			{
-				precioCombo += (buscarProducto(item).darPrecio()*(1-combo.darDescuento()));
+				
+				Double porcentaje = (double) (combo.darDescuento()/100.0);
+				precioCombo += (buscarProducto(item).darPrecio()*(1-porcentaje));
 			}
 			
 			precios.add(precioCombo);
@@ -179,7 +181,7 @@ public class Restaurante
 		
 		for (List<List<Integer>> item :items) 
 		{
-			pedido.agregarItem(item);
+			pedido.agregarProducto(item, id);
 		}
 	
 		pedidos.put(id, pedido);
@@ -245,7 +247,7 @@ public class Restaurante
 		System.out.println("\n----------------------------------------------------");
 		System.out.println("PRODUCTOS");
 
-		List<Integer> precios = darProductosPedido(pedido);
+		List<Integer> precios = darProductosPedido(pedido,true);
 
 		System.out.println("\n----------------------------------------------------\n");
 		
@@ -260,7 +262,6 @@ public class Restaurante
 		System.out.println("IVA--------------> $"+total*iva);
 		System.out.println("Precio Total-----> $"+totalNeto);
 		System.out.println("\n----------------------------------------------------\n");	
-		return ;
 	}
 	
 	
@@ -271,7 +272,7 @@ public class Restaurante
 		
 		for (List<List<Integer>> item :items) 
 		{
-			pedido.agregarItem(item);
+			pedido.agregarProducto(item, id);
 		}
 	
 		pedidos.put(id, pedido);
@@ -279,11 +280,11 @@ public class Restaurante
 	}
 	
 	//Imprime los productos del pedido
-	public List<Integer> darProductosPedido (Pedido pedido) 
+	public List<Integer> darProductosPedido (Pedido pedido, boolean imprime) 
 	{
 		List<Integer> precios = new ArrayList<Integer>();
 		
-		for (List<List<Integer>> item: pedido.darItems()) 
+		for (List<List<Integer>> item: pedido.darProductos()) 
 		{				
 			int cont = 0;
 			for(List<Integer> listadatos: item)
@@ -294,19 +295,23 @@ public class Restaurante
 					if (dato >0 && dato <= 22) 
 					{
 						precios.add(darPrecioProductos().get(dato-1));
-						System.out.println("\n"+darNombreProductos().get(dato-1)+"----------> $"+darPrecioProductos().get(dato-1));
+						
+						if (imprime) 
+							System.out.println("\n"+darNombreProductos().get(dato-1)+"----------> $"+darPrecioProductos().get(dato-1));
 					}
 					
 					else if (dato > 22 && dato <= 26)
 					{
 						precios.add(darPrecioCombo().get(dato-23));
-						combos.get(dato-23).darDescuento();
-						System.out.println("\n"+darNombreCombos().get(dato-23)+"----------> $"+darPrecioCombo().get(dato-23));						
+						combos.get(dato-23).darDescuento();										
 						List<String> products = combos.get(dato-23).consultarItems();
 						
-						for (String producto: products) 
-						{
-							System.out.println("   "+producto+"-------> +$"+buscarProducto(producto).darPrecio());
+						if (imprime) {
+							System.out.println("\n"+darNombreCombos().get(dato-23)+"----------> $"+darPrecioCombo().get(dato-23));						
+					
+							for (String producto: products) {
+								System.out.println("   "+producto+"-------> +$"+buscarProducto(producto).darPrecio());
+							}
 						}
 					}
 					
@@ -315,20 +320,26 @@ public class Restaurante
 						if(cont==2) 
 						{
 							precios.add(darPrecioIngredientes().get(dato-27));
-							System.out.println("   Ad "+darNombreIngredientes().get(dato-27)+"-----> +$"+darPrecioIngredientes().get(dato-27));
+							if (imprime)
+								System.out.println("   Ad "+darNombreIngredientes().get(dato-27)+"-----> +$"+darPrecioIngredientes().get(dato-27));
 						}
 						
-						else
-							System.out.println("   Del "+darNombreIngredientes().get(dato-27)+"-----> $"+darPrecioIngredientes().get(dato-27));
+						else {
+							if(imprime)
+								System.out.println("   Del "+darNombreIngredientes().get(dato-27)+"-----> $"+darPrecioIngredientes().get(dato-27));
+						}
+							
 					}
 					else 
 						continue;	
 				}	
 			}
 		}
+		//System.out.println(precios);
 		return precios;
 		
 	}
+	
 	
 	
 	//Tabla con los ids y los respectivos pedidos

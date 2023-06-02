@@ -9,15 +9,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import uniandes.dpoo.taller0.modelo.Ingrediente;
+import uniandes.dpoo.taller.test.ComboRepetidoException;
+import uniandes.dpoo.taller.test.HamburguesaException;
+import uniandes.dpoo.taller.test.IngredienteRepetidoException;
+import uniandes.dpoo.taller.test.ProductoRepetidoException;
 import uniandes.dpoo.taller0.modelo.Combo;
 import uniandes.dpoo.taller0.modelo.ProductoMenu;
 
 public class LoaderMenu
 {
 
-	public static Restaurante cargarArchivo() throws FileNotFoundException, IOException
+	public static Restaurante cargarArchivo() throws FileNotFoundException, IOException, HamburguesaException
 	{
 		Map<String, ProductoMenu> productos = new HashMap<>();
 		Map<String, Ingrediente> ingredientes = new HashMap<>();
@@ -35,66 +38,83 @@ public class LoaderMenu
 			BufferedReader br = new BufferedReader(new FileReader(archivo));
 
 			String linea = br.readLine();
-			while (linea != null) // Cuando se llegue al final del archivo, linea tendrá el valor null
+			while (linea != null) 
 			{
-				// Separar los los valores por el signo ";"
 				String[] partes = linea.split(";");
 				
-				//Extrae el primer dato(nombre) y segundo (valor, descuento o costo)
 				String nombre = partes[0];
 				int valor = Integer.parseInt(partes[1].replace("%", ""));
 				
-				//Busca la clase con el nombre
-				Combo elCombo = combos.get(nombre);
-				ProductoMenu elProducto = productos.get(nombre);
-				Ingrediente elIngrediente = ingredientes.get(nombre);
-
+				
 				if (archivo == "./data/menu.txt") 
 				{
-					// Si no se había encontrado antes el producto, se agrega como un nuevo producto.
-					if (elProducto == null)
-					{
-						elProducto = new ProductoMenu(nombre, valor);
-						productos.put(nombre, elProducto);
-					}
+					try {
+						ProductoMenu elProducto = productos.get(nombre);
+						
+						if (elProducto == null) {
+							elProducto = new ProductoMenu(nombre, valor);					
+							productos.put(nombre, elProducto);
+						}
+						else 
+							throw new ProductoRepetidoException(nombre);
+																				
+					} catch (ProductoRepetidoException e) {
+						System.out.println("Producto repetido: " + e.getProducto());
+					}	
 				}
 				
 				else if (archivo == "./data/combos.txt")
 				{
-					double porcentajeDescuento = Double.parseDouble(partes[1].replace("%", ""));
-					double descuento = porcentajeDescuento/100;
-					String item1 = partes[2];
-					String item2 = partes[3];
-					String item3 = partes[4];
-					
-					// Si no se había encontrado antes a el combo, se agrega como un nuevo combo.
-					if (elCombo == null)
-					{
-						elCombo = new Combo(nombre, descuento);
-						combos.put(nombre, elCombo);
-					}
-
-					combos.get(nombre).agregarItem(productos.get(item1));
-					combos.get(nombre).agregarItem(productos.get(item2));
-					combos.get(nombre).agregarItem(productos.get(item3));
-				}
+					try {
+						Combo elCombo = combos.get(nombre);
+						
+						String item1 = partes[2];
+						String item2 = partes[3];
+						String item3 = partes[4];
+						
+						if (elCombo == null)
+						{
+							elCombo = new Combo(nombre, valor);					
+							combos.put(nombre, elCombo);
+							
+							combos.get(nombre).agregarItem(productos.get(item1));
+							combos.get(nombre).agregarItem(productos.get(item2));
+							combos.get(nombre).agregarItem(productos.get(item3));
+						}
+						else
+							throw new ComboRepetidoException(nombre);
+						
+					} catch (ComboRepetidoException e) {
+						System.out.println("Combo repetido: " + e.getCombo());
+					}										
+				}									
 				
 				else if (archivo == "./data/ingredientes.txt")
 				{
-					// Si no se había encontrado antes a el ingrediente, se agrega como un nuevo ingrediente.
-					if (elIngrediente == null)
-					{
-						elIngrediente = new Ingrediente(nombre, valor);
-						ingredientes.put(nombre, elIngrediente);
+					try {
+						Ingrediente elIngrediente = ingredientes.get(nombre);
+
+						if (elIngrediente == null){
+							elIngrediente = new Ingrediente(nombre, valor);												
+							ingredientes.put(nombre, elIngrediente);
+						}
+						else 
+							throw new IngredienteRepetidoException(nombre);
+																				
+					} catch (IngredienteRepetidoException e) {
+						System.out.println("Ingrediente repetido: " + e.getIngrediente());
 					}
+					
 				}
 				
-				linea = br.readLine(); // Leer la siguiente línea
+				linea = br.readLine(); 
 			}
 
 			br.close();
 		}
+		
 		Restaurante calculadora = new Restaurante(productos, ingredientes, combos);
 		return calculadora;
 	}
 }
+

@@ -2,13 +2,14 @@ package uniandes.dpoo.taller0.modelo;
 
 import java.util.ArrayList;
 import java.util.List;
+import uniandes.dpoo.taller0.procesamiento.Restaurante;
 
 public class Pedido 
 {
 	// ************************************************************************
 	// Atributos
 	// ************************************************************************
-
+	private Restaurante rest;
 	/**
 	 * El numero de pedidos realizados
 	 */
@@ -33,7 +34,6 @@ public class Pedido
 	 * El pedido esta abierto(no finalizado)
 	 */
 	private boolean abierto;
-	
 	
 	/**
 	 * Una lista con los productos individuales del combo.
@@ -102,12 +102,12 @@ public class Pedido
 
 	//Registra el item seleccionado en la lista del pedido.
 
-	public void agregarItem(List<List<Integer>> items)
-	{
+	public void agregarProducto(List<List<Integer>> items, int id)
+	{	
 		itemsPedido.add(items);
 	}
 	
-	public ArrayList<List<List<Integer>>> darItems(){
+	public ArrayList<List<List<Integer>>> darProductos(){
 		return itemsPedido;
 	}
 	
@@ -148,7 +148,4 @@ public class Pedido
 	{
 		return nombreCliente;
 	}
-
-	
-
 }
